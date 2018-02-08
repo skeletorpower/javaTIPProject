@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="myProcess" name="My process" isExecutable="true">
-    <startEvent id="startevent1" name="Start"></startEvent>
+    <startEvent id="startevent1" name="Start" activiti:initiator="fozzie"></startEvent>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="exclusivegateway1"></sequenceFlow>
     <userTask id="zzo" name="Zahtev za odobrenje boravka na radnom mestu posle radnog vremena"></userTask>
@@ -10,19 +10,32 @@
     <userTask id="zzn" name="Zahtev za nabavku kancelarijskog materijala"></userTask>
     <sequenceFlow id="flow3" sourceRef="exclusivegateway1" targetRef="zzp"></sequenceFlow>
     <sequenceFlow id="flow4" sourceRef="exclusivegateway1" targetRef="zzn"></sequenceFlow>
-    <serviceTask id="mailtask1" name="Mail Task" activiti:type="mail"></serviceTask>
+    <serviceTask id="mailtask1" name="Mail Task" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:string><![CDATA[fozzie@alfresco.com]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[gonzo@alfresco.com]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:string><![CDATA[Your ticket is being reviewed]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
     <sequenceFlow id="flow5" sourceRef="zzn" targetRef="mailtask1"></sequenceFlow>
     <sequenceFlow id="flow6" sourceRef="zzo" targetRef="mailtask1"></sequenceFlow>
     <sequenceFlow id="flow7" sourceRef="zzp" targetRef="mailtask1"></sequenceFlow>
-    <userTask id="usertask4" name="Dodela zahteva sefu"></userTask>
+    <userTask id="usertask4" name="Dodela zahteva sefu" activiti:assignee="gonzo"></userTask>
     <sequenceFlow id="flow8" sourceRef="mailtask1" targetRef="usertask4"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow9" sourceRef="usertask4" targetRef="exclusivegateway2"></sequenceFlow>
     <serviceTask id="mailtask2" name="Zahtev odbijen" activiti:type="mail"></serviceTask>
     <sequenceFlow id="flow10" sourceRef="exclusivegateway2" targetRef="mailtask2"></sequenceFlow>
-    <sequenceFlow id="flow11" sourceRef="mailtask2" targetRef="exclusivegateway1"></sequenceFlow>
-    <userTask id="usertask5" name="Dodela zahteva direktoru"></userTask>
+    <userTask id="usertask5" name="Dodela zahteva direktoru" activiti:assignee="kermit"></userTask>
     <sequenceFlow id="flow12" sourceRef="exclusivegateway2" targetRef="usertask5"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow13" sourceRef="mailtask2" targetRef="endevent1"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
     <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
@@ -51,10 +64,13 @@
         <omgdc:Bounds height="40.0" width="40.0" x="690.0" y="199.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="mailtask2" id="BPMNShape_mailtask2">
-        <omgdc:Bounds height="55.0" width="105.0" x="550.0" y="310.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="730.0" y="310.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="usertask5" id="BPMNShape_usertask5">
         <omgdc:Bounds height="71.0" width="105.0" x="760.0" y="50.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="860.0" y="320.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="95.0" y="217.0"></omgdi:waypoint>
@@ -95,17 +111,16 @@
       <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
         <omgdi:waypoint x="710.0" y="239.0"></omgdi:waypoint>
         <omgdi:waypoint x="709.0" y="337.0"></omgdi:waypoint>
-        <omgdi:waypoint x="655.0" y="337.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
-        <omgdi:waypoint x="550.0" y="337.0"></omgdi:waypoint>
-        <omgdi:waypoint x="160.0" y="337.0"></omgdi:waypoint>
-        <omgdi:waypoint x="160.0" y="238.0"></omgdi:waypoint>
+        <omgdi:waypoint x="730.0" y="337.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
         <omgdi:waypoint x="710.0" y="199.0"></omgdi:waypoint>
         <omgdi:waypoint x="710.0" y="85.0"></omgdi:waypoint>
         <omgdi:waypoint x="760.0" y="85.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="835.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="860.0" y="337.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
